@@ -79,11 +79,20 @@ def crop(raw_image_path):
 	I_cropped = I_thresholded[(1-I_thresholded).sum(axis=1)>0,:][:,(1-I_thresholded).sum(axis=0)>0]
 	
 	display_image(I, title = 'Input image')
-	display_image(I_gray, cmap = 'gray', title = 'Grayscale image')
-	display_image(I_thresholded, cmap = 'gray', title = 'Thresholded image')
-	display_image(I_cropped, cmap = 'gray', title = 'Cropped image')
+	display_image(I_gray, title = 'Grayscale image', cmap = 'gray')
+	display_image(I_thresholded, title = 'Thresholded image', cmap = 'gray')
+	display_image(I_cropped, title = 'Cropped image', cmap = 'gray')
 	
 	return I_cropped
+
+def invertAndCeil(image):
+	from skimage import util
+	import numpy as np
+	
+	inverted_img = util.invert(image)
+	inverted_img_ceil = np.ceil(inverted_img)
+	
+	return inverted_img_ceil
 
 def digits(wild_image):
 	import numpy as np
@@ -93,7 +102,11 @@ def digits(wild_image):
 	
 	cropped = crop(wild_image)
 	resized = resize(cropped)
-	chopped = chop(resized)
+	inverted = invertAndCeil(resized)
+	chopped = chop(inverted)
+	
+	display_image(resized, 'Resized image', 'gray')
+	display_image(inverted, 'Inverted image', 'gray')
 	
 	n_digits = 10
 	for i_digit, digit in enumerate(chopped):
