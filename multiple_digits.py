@@ -21,7 +21,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import wild
+import utils
 
 import argparse
 import sys
@@ -35,7 +35,7 @@ FLAGS = None
 
 def main(_):
 	# Import data
-	wild_data = wild.digits(FLAGS.wild_image)
+	wild_data = utils.digits(FLAGS.wild_image)
 	mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 	
 	# Create the model
