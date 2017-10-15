@@ -79,7 +79,7 @@ plt.title('Grayscale image')
 # plt.title('Pre-thresholding image')
 
 
-# In[189]:
+# In[239]:
 
 
 ############################################
@@ -93,9 +93,51 @@ plt.title('Thresholded image')
 
 # Now we crop it.
 
-# In[191]:
+# In[240]:
 
 
-I_cropped = I_thresholded[(1-I_thresholded).sum(axis=1)>0,:][:,(1-I_thresholded).sum(axis=0)>0]
+I_cropped = I_thresholded[(1-I_thresholded).sum(axis=1)>0,:]#[:,(1-I_thresholded).sum(axis=0)>0]
 plt.imshow(I_cropped, cmap='gray')
+
+
+# Now segment this into individal digits.
+
+# In[215]:
+
+
+import scipy as sp
+from scipy import signal
+
+
+# In[288]:
+
+
+intensities_horz = I_cropped.sum(axis=0)
+# plt.plot(intensities_horz)
+peak_locs = sp.signal.find_peaks_cwt(intensities_horz,np.arange(20,70))
+print(peak_locs)
+
+
+# In[289]:
+
+
+# show the segmenting lines
+I_segmented = I_cropped.copy()
+for x in peak_locs:
+    I_segmented[:, x-10:x+10] = 0
+plt.imshow(I_segmented, cmap='gray')
+
+
+# In[290]:
+
+
+# Segment into multiple images
+digits=[]
+for i in xrange(0, len(peak_locs) - 1):
+    digits.append(I_segmented[:, peak_locs[i]:peak_locs[i+1]])
+
+# show the segmented digits
+for i in xrange(len(digits)):
+    plt.subplot(4,4,i)
+    plt.imshow(digits[i],cmap='gray')
 
