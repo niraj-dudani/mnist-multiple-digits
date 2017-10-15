@@ -86,3 +86,10 @@ def crop(raw_image_path):
 	#~ plt.imshow(I_cropped, cmap='gray')
 	
 	return I_cropped
+
+def invertAndCeil(image):
+	from skimage import util
+	inverted_img = util.invert(image)
+	inverted_img_ceil = np.ceil(inverted_img)
+	return inverted_img_ceil
+
