@@ -34,8 +34,6 @@ FLAGS = None
 
 
 def main(_):
-	import pdb ; pdb.set_trace()
-	
 	# Import data
 	wild_data = wild.digits(FLAGS.wild_image)
 	mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
