@@ -67,19 +67,54 @@ def train_and_test(data, learning_rate, r_lambda):
   return accuracy_value
 
 
+class SearchResult:
+  def __init__(self, hyperparameters, accuracy):
+    self.hyperparameters = hyperparameters
+    self.accuracy = accuracy
+
+
+def search(data, hyperparameter_candidates):
+  import numpy as np
+  
+  accuracies = []
+  
+  for hyperparameters in hyperparameter_candidates:
+    learning_rate, regularization_parameter = hyperparameters
+    
+    msg = "Learning rate = {} ; Regularization parameter = {} ; "
+    msg = msg.format(learning_rate, regularization_parameter)
+    
+    print(msg, flush = True, end = '')
+    accuracy = train_and_test(data, learning_rate, regularization_parameter)
+    print(accuracy, flush = True)
+    
+    accuracies.append(accuracy)
+  
+  argmax = np.argmax(accuracies)
+  
+  best_accuracy = accuracies[argmax]
+  best_hyperparameters = hyperparameter_candidates[argmax]
+  
+  search_result = SearchResult(
+    best_hyperparameters,
+    best_accuracy
+  )
+  
+  return search_result
+
+
 
 def main(_):
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
-  learning_rate = 0.5
-  r_lambda = 1.0
+  hyperparameter_candidates = [
+    (0.5, 1.0),
+    (25, 1.0),
+  ]
   
-  accuracy = train_and_test(mnist, learning_rate, r_lambda)
-  print(accuracy)
+  search_result = search(mnist, hyperparameter_candidates)
   
-  accuracy = train_and_test(mnist, 25, r_lambda)
-  print(accuracy)
-
+  print(search_result.accuracy, search_result.hyperparameters)
 
 
 if __name__ == '__main__':
