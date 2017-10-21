@@ -131,13 +131,14 @@ def search(data, hyperparameter_candidates):
 
 def main(_):
   import grid_search
+  import math
   
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
   grid_size = 20
-  n_samples = 30
-  shrink_factor = 10
-  n_search_levels = 1
+  n_samples = 5
+  zoom_factor = 5
+  n_search_levels = 3
   
   # Parameter range
   ln_min = -3
@@ -147,6 +148,7 @@ def main(_):
   rg_max = 1
   
   for i_search_level in range(n_search_levels):
+    print()
     print('[Search Level {}]'.format(i_search_level))
     print('Learning rate range: [{}, {}]'.format(ln_min, ln_max))
     print('Regularization constant range: [{}, {}]'.format(rg_min, rg_max))
@@ -170,16 +172,46 @@ def main(_):
       #~ (0.5, 10.0),
     #~ ]
     
-    #~ search_result = search(mnist, hyperparameter_candidates)
+    #~ import pdb ; pdb.set_trace()
     
-    #~ print(search_result.accuracy, search_result.hyperparameters)
-  
-  pass
+    search_result = search(mnist, hyperparameter_candidates)
+    
+    
+    print("Search done.")
+    print("Accuracy:", search_result.accuracy)
+    print("Hyperparameters:", search_result.hyperparameters)
+    
+    #~ search_result = SearchResult(
+      #~ hyperparameter_candidates[3],
+      #~ 0.9
+    #~ )
+    
+    ln_best, rg_best = search_result.hyperparameters
+    
+    ln_best_exponent = math.log10(ln_best)
+    rg_best_exponent = math.log10(rg_best)
+    
+    range_length_current_ln = ln_max - ln_min
+    range_length_current_rg = rg_max - rg_min
+    
+    range_length_new_ln = range_length_current_ln / zoom_factor
+    range_length_new_rg = range_length_current_rg / zoom_factor
+    
+    ln_min = ln_best_exponent - range_length_new_ln / 2
+    ln_max = ln_best_exponent + range_length_new_ln / 2
+    
+    rg_min = rg_best_exponent - range_length_new_rg / 2
+    rg_max = rg_best_exponent + range_length_new_rg / 2
 
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
-  parser.add_argument('--data_dir', type=str, default='../data/train',
-                      help='Directory for storing input data')
+  parser.add_argument(
+    '--data_dir',
+    type=str,
+    default='../data/train',
+    help='Directory for storing input data'
+  )
+  
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

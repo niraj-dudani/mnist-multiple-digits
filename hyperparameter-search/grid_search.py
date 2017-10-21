@@ -32,6 +32,8 @@ def check_default_bounds(x1y1, x2y2):
 
 
 def grid_search(x1y1, x2y2, n_points = 20, precision=3):
+    import numpy as np
+    
     x1, y1 = x1y1
     x2, y2 = x2y2
     
@@ -43,9 +45,10 @@ def grid_search(x1y1, x2y2, n_points = 20, precision=3):
     regularisation_constant = np.logspace(y1, y2, num=n_points)
     grid = list(itertools.product(learning_rate_arr, regularisation_constant))
     random_tuple = choice(grid)
-    random_ln = round(random_tuple[0], precision)
-    random_reg = round(random_tuple[1], precision)
+    random_ln = np.float32(round(random_tuple[0], precision))
+    random_reg = np.float32(round(random_tuple[1], precision))
     random = (random_ln, random_reg)
+    
     return random
 
 
