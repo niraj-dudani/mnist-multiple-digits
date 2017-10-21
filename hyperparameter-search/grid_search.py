@@ -4,52 +4,81 @@ from random import choice
 
 # These are the defaults initialised with learning rate and regualarisation 
 # constant. One can change as required.
-default_x_min = -10
-default_x_max = 2
-default_y_min = -10
-default_y_max = 2
+default_a_min = -10
+default_a_max = 2
+default_b_min = -10
+default_b_max = 2
+default_c_min = 0
+default_c_max = 7
+default_d_min = 0
+default_d_max = 6
+default_e_min = 0
+default_e_max = 6
 
 
 
 # This method accepts two tuples in the format of (x1=start for learning rate, 
-# y1=start for regualrization paramter) and (x2=end for learning rate, y2=end 
+# y1=start for regularization paramter) and (x2=end for learning rate, y2=end 
 # for regualrisation parameter) along with an optional precision paramter.
-def check_default_bounds(x1y1, x2y2):
-    x1, y1 = x1y1
-    x2, y2 = x2y2
+def check_default_bounds(range_min, range_max):
+    a1, b1, c1, d1, e1 = range_min
+    a2, b2, c2, d2, e2 = range_max
     
-    is_x1_outofbounds = x1 < default_x_min or x1 > default_x_max
-    is_x2_outofbounds = x2 < default_x_min or x2 > default_x_max
-    is_y1_outofbounds = y1 < default_y_min or y1 > default_y_max
-    is_y2_outofbounds = y2 < default_y_min or y2 > default_y_max
+    is_a1_outofbounds = a1 < default_a_min or a1 > default_a_max
+    is_a2_outofbounds = a2 < default_a_min or a2 > default_a_max
+    is_b1_outofbounds = b1 < default_b_min or b1 > default_b_max
+    is_b2_outofbounds = b2 < default_b_min or b2 > default_b_max
+    is_c1_outofbounds = c1 < default_c_min or c1 > default_c_max
+    is_c2_outofbounds = c2 < default_c_min or c2 > default_c_max
+    is_d1_outofbounds = d1 < default_d_min or d1 > default_d_max
+    is_d2_outofbounds = d2 < default_d_min or d2 > default_d_max
+    is_e1_outofbounds = e1 < default_e_min or e1 > default_e_max
+    is_e2_outofbounds = e2 < default_e_min or e2 > default_e_max
     
     return (
-        is_x1_outofbounds or
-        is_x2_outofbounds or
-        is_y1_outofbounds or
-        is_y2_outofbounds
+        is_a1_outofbounds or
+        is_a2_outofbounds or
+        is_b1_outofbounds or
+        is_b2_outofbounds or
+        is_c1_outofbounds or
+        is_c2_outofbounds or
+        is_d1_outofbounds or
+        is_d2_outofbounds or
+        is_e1_outofbounds or
+        is_e2_outofbounds
     )
 
 
-def grid_search(x1y1, x2y2, n_points = 20, precision=3):
+def grid_search(range_min, range_max, n_points = 20):
     import numpy as np
     
-    x1, y1 = x1y1
-    x2, y2 = x2y2
+    a1, b1, c1, d1, e1 = range_min
+    a2, b2, c2, d2, e2 = range_max
     
-    if(check_default_bounds((x1, y1), (x2, y2)) == True):
+    if(check_default_bounds(range_min, range_max) == True):
         print("Invalid bounds for the given grid")
         return
     
-    learning_rate_arr = np.logspace(x1, x2, num=n_points)
-    regularisation_constant = np.logspace(y1, y2, num=n_points)
-    grid = list(itertools.product(learning_rate_arr, regularisation_constant))
-    random_tuple = choice(grid)
-    random_ln = np.float32(round(random_tuple[0], precision))
-    random_reg = np.float32(round(random_tuple[1], precision))
-    random = (random_ln, random_reg)
+    learning_rate_arr = np.logspace(a1, a2, num=n_points)
+    regularisation_constant_arr = np.logspace(b1, b2, num=n_points)
+    iterations_arr = np.logspace(c1, c2, num=n_points)
+    batch_size_arr = np.logspace(d1, d2, num=n_points)
+    hidden_neurons_arr = np.logspace(e1, e2, num=n_points)
     
-    return random
+    grid = list(
+        itertools.product(
+            learning_rate_arr,
+            regularisation_constant_arr,
+            iterations_arr,
+            batch_size_arr,
+            hidden_neurons_arr
+        )
+    )
+    
+    random_tuple = choice(grid)
+    random_tuple = [np.float32(z) for z in random_tuple]
+    
+    return random_tuple
 
 
 # Method to get the first initialised random

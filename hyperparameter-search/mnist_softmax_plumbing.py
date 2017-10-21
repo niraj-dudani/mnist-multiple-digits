@@ -30,10 +30,10 @@ import tensorflow as tf
 
 FLAGS = None
 
-def train_and_test(data, learning_rate, regularization_constant):
+def train_and_test(data, learning_rate, regularization_constant, iterations, batch_size, n_hidden):
   # Create the model
   LAYER1_SIZE = 784 # input data dimension too
-  LAYER2_SIZE = 10 # 128
+  LAYER2_SIZE = int(n_hidden)
   OUTPUT_SIZE = 10
   
   # input
@@ -73,8 +73,8 @@ def train_and_test(data, learning_rate, regularization_constant):
   tf.global_variables_initializer().run()
   
   # Train
-  for _ in range(1000):
-    batch_xs, batch_ys = data.train.next_batch(100)
+  for _ in range(int(iterations)):
+    batch_xs, batch_ys = data.train.next_batch(int(batch_size))
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
   
   # Test trained model
@@ -88,6 +88,8 @@ def train_and_test(data, learning_rate, regularization_constant):
       y_: data.test.labels
     }
   )
+  
+  sess.close()
   
   return accuracy_value
 
@@ -104,14 +106,23 @@ def search(data, hyperparameter_candidates):
   accuracies = []
   
   for hyperparameters in hyperparameter_candidates:
-    learning_rate, regularization_constant = hyperparameters
+    learning_rate, regularization_constant, iterations, batch_size, hidden_neurons = hyperparameters
     
-    msg = "Learning rate = {} ; Regularization parameter = {} ; "
-    msg = msg.format(learning_rate, regularization_constant)
+    print("Learning rate =", learning_rate)
+    print("Regularization constant =", regularization_constant)
+    print("Iterations =", iterations)
+    print("Batch size =", batch_size)
+    print("Hidden neurons =", hidden_neurons)
     
-    print(msg, flush = True, end = '')
-    accuracy = train_and_test(data, learning_rate, regularization_constant)
-    print(accuracy, flush = True)
+    accuracy = train_and_test(
+      data,
+      learning_rate,
+      regularization_constant,
+      iterations,
+      batch_size,
+      hidden_neurons
+    )
+    print("Accuracy =", accuracy)
     
     accuracies.append(accuracy)
   
@@ -147,16 +158,28 @@ def main(_):
   rg_min = -3
   rg_max = 1
   
+  it_min = 3
+  it_max = 5
+  
+  bt_min = 1
+  bt_max = 3
+  
+  hd_min = 1.3
+  hd_max = 2.8
+  
   for i_search_level in range(n_search_levels):
     print()
     print('[Search Level {}]'.format(i_search_level))
     print('Learning rate range: [{}, {}]'.format(ln_min, ln_max))
     print('Regularization constant range: [{}, {}]'.format(rg_min, rg_max))
+    print('Iteration range: [{}, {}]'.format(it_min, it_max))
+    print('Batch size range: [{}, {}]'.format(bt_min, bt_max))
+    print('Hidden neurons range: [{}, {}]'.format(hd_min, hd_max))
     
     hyperparameter_candidates = [
       grid_search.grid_search(
-        (ln_min, rg_min),
-        (ln_max, rg_max),
+        (ln_min, rg_min, it_min, bt_min, hd_min),
+        (ln_max, rg_max, it_max, bt_max, hd_max),
         grid_size
       )
       for _ in range(n_samples)
@@ -186,22 +209,40 @@ def main(_):
       #~ 0.9
     #~ )
     
-    ln_best, rg_best = search_result.hyperparameters
+    ln_best, rg_best, it_best, bt_best, hd_best = search_result.hyperparameters
     
     ln_best_exponent = math.log10(ln_best)
     rg_best_exponent = math.log10(rg_best)
+    it_best_exponent = math.log10(it_best)
+    bt_best_exponent = math.log10(bt_best)
+    hd_best_exponent = math.log10(hd_best)
     
     range_length_current_ln = ln_max - ln_min
     range_length_current_rg = rg_max - rg_min
+    range_length_current_it = it_max - it_min
+    range_length_current_bt = bt_max - bt_min
+    range_length_current_hd = hd_max - hd_min
     
     range_length_new_ln = range_length_current_ln / zoom_factor
     range_length_new_rg = range_length_current_rg / zoom_factor
+    range_length_new_it = range_length_current_it / zoom_factor
+    range_length_new_bt = range_length_current_bt / zoom_factor
+    range_length_new_hd = range_length_current_hd / zoom_factor
     
     ln_min = ln_best_exponent - range_length_new_ln / 2
     ln_max = ln_best_exponent + range_length_new_ln / 2
     
     rg_min = rg_best_exponent - range_length_new_rg / 2
     rg_max = rg_best_exponent + range_length_new_rg / 2
+    
+    it_min = it_best_exponent - range_length_new_it / 2
+    it_max = it_best_exponent + range_length_new_it / 2
+    
+    bt_min = bt_best_exponent - range_length_new_bt / 2
+    bt_max = bt_best_exponent + range_length_new_bt / 2
+    
+    hd_min = hd_best_exponent - range_length_new_hd / 2
+    hd_max = hd_best_exponent + range_length_new_hd / 2
 
 
 if __name__ == '__main__':
