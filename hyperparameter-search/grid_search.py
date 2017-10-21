@@ -13,16 +13,23 @@ default_y2 = -3
 # optional precision paramter.
 
 
-def check_default_bounds((x1, y1), (x2, y2)):
+def check_default_bounds(x1y1, x2y2):
+    x1, y1 = x1y1
+    x2, y2 = x2y2
+    
     is_x1_outofbounds = x1 > default_x1 or x2 < default_x2
     is_y1_outofbounds = y1 > default_y1 or y2 < default_y2
     return is_x1_outofbounds or is_y1_outofbounds
 
 
-def grid_search((x1, y1), (x2, y2), precision=3):
+def grid_search(x1y1, x2y2, precision=3):
+    x1, y1 = x1y1
+    x2, y2 = x2y2
+    
     if(check_default_bounds((x1, y1), (x2, y2)) == True):
-        print "Invalid bounds for the given grid"
+        print("Invalid bounds for the given grid")
         return
+    
     learning_rate_arr = np.logspace(x1, x2, num=20)
     regularisation_constant = np.logspace(y1, y2, num=20)
     grid = list(itertools.product(learning_rate_arr, regularisation_constant))
@@ -37,3 +44,7 @@ def grid_search((x1, y1), (x2, y2), precision=3):
 def get_first_random_grid_search():
     random1 = grid_search((default_x1, default_y1), (default_x2, default_y2))
     return random1
+
+random1 = get_first_random_grid_search()
+
+print(random1)
