@@ -38,7 +38,7 @@ def main(_):
   # Create the model
   LAYER1_SIZE = 784 # input data dimension too
   LAYER2_SIZE = 2 # 128
-  OUTPUT_SIZE = 10
+  OUTPUT_LAYER_SIZE = 10
   LAMBDA = 1 # regularization factor for the weights
 
   # input
@@ -47,14 +47,14 @@ def main(_):
   # layer 1
   W1 = tf.Variable(tf.zeros([LAYER1_SIZE, LAYER2_SIZE]))
   b1 = tf.Variable(tf.zeros([LAYER2_SIZE]))
-  y1 = tf.matmul(x, W1) + b1
+  y1 = tf.sigmoid(tf.matmul(x, W1) + b1)
 
   # layer 2
   W2 = tf.Variable(tf.zeros([LAYER2_SIZE, OUTPUT_LAYER_SIZE]))
   b2 = tf.Variable(tf.zeros([OUTPUT_LAYER_SIZE]))
 
   # output
-  y = tf.sigmoid(tf.matmul(y1, W2) + b2)
+  y = tf.matmul(y1, W2) + b2
 
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, OUTPUT_LAYER_SIZE])
