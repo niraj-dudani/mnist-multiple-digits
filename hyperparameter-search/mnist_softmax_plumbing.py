@@ -33,14 +33,14 @@ FLAGS = None
 def train_and_test(data, learning_rate, regularization_constant):
   # Create the model
   LAYER1_SIZE = 784 # input data dimension too
-  LAYER2_SIZE = 10 # 128
+  LAYER2_SIZE = 128 # 128
   OUTPUT_SIZE = 10
   
   # input
   x = tf.placeholder(tf.float32, [None, LAYER1_SIZE])
   
   # layer 1
-  W1 = tf.Variable(tf.zeros([LAYER1_SIZE, LAYER2_SIZE]))
+  W1 = tf.Variable(tf.random_normal([LAYER1_SIZE, LAYER2_SIZE]))
   b1 = tf.Variable(tf.zeros([LAYER2_SIZE]))
   y1 = tf.sigmoid(tf.matmul(x, W1) + b1)
   
@@ -73,14 +73,14 @@ def train_and_test(data, learning_rate, regularization_constant):
   tf.global_variables_initializer().run()
   
   # Train
-  for _ in range(1000):
+  for _ in range(10000):
     batch_xs, batch_ys = data.train.next_batch(100)
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
   
   # Test trained model
   correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-  
+
   accuracy_value = sess.run(
     accuracy,
     feed_dict = {
@@ -88,7 +88,7 @@ def train_and_test(data, learning_rate, regularization_constant):
       y_: data.test.labels
     }
   )
-  
+  sess.close()  
   return accuracy_value
 
 
@@ -135,17 +135,17 @@ def main(_):
   
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
-  grid_size = 20
-  n_samples = 5
+  grid_size = 40
+  n_samples = 20
   zoom_factor = 5
-  n_search_levels = 3
+  n_search_levels = 2
   
   # Parameter range
   ln_min = -3
-  ln_max = 1
+  ln_max = 0
   
-  rg_min = -3
-  rg_max = 1
+  rg_min = -7
+  rg_max = -3
   
   for i_search_level in range(n_search_levels):
     print()
@@ -157,7 +157,8 @@ def main(_):
       grid_search.grid_search(
         (ln_min, rg_min),
         (ln_max, rg_max),
-        grid_size
+        grid_size,
+        6
       )
       for _ in range(n_samples)
     ]
