@@ -59,7 +59,12 @@ def train_and_test(data, learning_rate, regularization_constant):
       tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
   
   # add regularization
-  regularization_term = tf.constant(regularization_constant) * (tf.reduce_sum(tf.square(W1)) + tf.reduce_sum(tf.square(W2)))
+  regularization_term = (
+    tf.constant(regularization_constant) * (
+      tf.reduce_sum(tf.square(W1)) +
+      tf.reduce_sum(tf.square(W2))
+    )
+  )
   
   loss = cross_entropy + regularization_term
   train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
@@ -125,17 +130,51 @@ def search(data, hyperparameter_candidates):
 
 
 def main(_):
+  import grid_search
+  
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
-  hyperparameter_candidates = [
-    (0.5, 0.0),
-    # (0.5, 0.1),
-    # (0.5, 1.0),
-    # (0.5, 10.0),
-  ]
-  search_result = search(mnist, hyperparameter_candidates)
+  grid_size = 20
+  n_samples = 30
+  shrink_factor = 10
+  n_search_levels = 1
   
-  print(search_result.accuracy, search_result.hyperparameters)
+  # Parameter range
+  ln_min = -3
+  ln_max = 1
+  
+  rg_min = -3
+  rg_max = 1
+  
+  for i_search_level in range(n_search_levels):
+    print('[Search Level {}]'.format(i_search_level))
+    print('Learning rate range: [{}, {}]'.format(ln_min, ln_max))
+    print('Regularization constant range: [{}, {}]'.format(rg_min, rg_max))
+    
+    hyperparameter_candidates = [
+      grid_search.grid_search(
+        (ln_min, rg_min),
+        (ln_max, rg_max),
+        grid_size
+      )
+      for _ in range(n_samples)
+    ]
+    
+    
+    print(hyperparameter_candidates)
+    
+    #~ hyperparameter_candidates = [
+      #~ (0.5, 0.0),
+      #~ (0.5, 0.1),
+      #~ (0.5, 1.0),
+      #~ (0.5, 10.0),
+    #~ ]
+    
+    #~ search_result = search(mnist, hyperparameter_candidates)
+    
+    #~ print(search_result.accuracy, search_result.hyperparameters)
+  
+  pass
 
 
 if __name__ == '__main__':
