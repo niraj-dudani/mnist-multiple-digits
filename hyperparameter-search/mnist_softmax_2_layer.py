@@ -54,7 +54,7 @@ def main(_):
   b2 = tf.Variable(tf.zeros([OUTPUT_LAYER_SIZE]))
 
   # output
-  y = tf.matmul(y1, W2) + b2
+  y = tf.sigmoid(tf.matmul(y1, W2) + b2)
 
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, OUTPUT_LAYER_SIZE])
