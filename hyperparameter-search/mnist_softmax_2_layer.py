@@ -36,13 +36,28 @@ def main(_):
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
   # Create the model
-  x = tf.placeholder(tf.float32, [None, 784])
-  W = tf.Variable(tf.zeros([784, 10]))
-  b = tf.Variable(tf.zeros([10]))
-  y = tf.matmul(x, W) + b
+  LAYER1_SIZE = 784 # input data dimension too
+  LAYER2_SIZE = 2 # 128
+  OUTPUT_SIZE = 10
+  LAMBDA = 1 # regularization factor for the weights
+
+  # input
+  x = tf.placeholder(tf.float32, [None, LAYER1_SIZE])
+
+  # layer 1
+  W1 = tf.Variable(tf.zeros([LAYER1_SIZE, LAYER2_SIZE]))
+  b1 = tf.Variable(tf.zeros([LAYER2_SIZE]))
+  y1 = tf.matmul(x, W1) + b1
+
+  # layer 2
+  W2 = tf.Variable(tf.zeros([LAYER2_SIZE, OUTPUT_LAYER_SIZE]))
+  b2 = tf.Variable(tf.zeros([OUTPUT_LAYER_SIZE]))
+
+  # output
+  y = tf.sigmoid(tf.matmul(y1, W2) + b2)
 
   # Define loss and optimizer
-  y_ = tf.placeholder(tf.float32, [None, 10])
+  y_ = tf.placeholder(tf.float32, [None, OUTPUT_LAYER_SIZE])
 
   # The raw formulation of cross-entropy,
   #
@@ -55,7 +70,12 @@ def main(_):
   # outputs of 'y', and then average across the batch.
   cross_entropy = tf.reduce_mean(
       tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-  train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+  # add regularization
+  regularization_term = tf.constant(LAMBDA) * (tf.reduce_sum(tf.square(W1)) + tf.reduce_sum(tf.square(W2)))
+
+  loss = cross_entropy + regularization_term
+  train_step = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
 
   sess = tf.InteractiveSession()
   tf.global_variables_initializer().run()
