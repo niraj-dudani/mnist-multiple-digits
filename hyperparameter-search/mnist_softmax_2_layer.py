@@ -38,7 +38,7 @@ def main(_):
   # Create the model
   LAYER1_SIZE = 784 # input data dimension too
   LAYER2_SIZE = 2 # 128
-  OUTPUT_SIZE = 10
+  OUTPUT_LAYER_SIZE = 10
   LAMBDA = 1 # regularization factor for the weights
 
   # input
