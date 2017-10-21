@@ -33,7 +33,7 @@ FLAGS = None
 def train_and_test(data, learning_rate, regularization_constant):
   # Create the model
   LAYER1_SIZE = 784 # input data dimension too
-  LAYER2_SIZE = 2 # 128
+  LAYER2_SIZE = 10 # 128
   OUTPUT_SIZE = 10
   
   # input
@@ -42,14 +42,15 @@ def train_and_test(data, learning_rate, regularization_constant):
   # layer 1
   W1 = tf.Variable(tf.zeros([LAYER1_SIZE, LAYER2_SIZE]))
   b1 = tf.Variable(tf.zeros([LAYER2_SIZE]))
-  y1 = tf.matmul(x, W1) + b1
+  y1 = tf.sigmoid(tf.matmul(x, W1) + b1)
   
   # layer 2
   W2 = tf.Variable(tf.zeros([LAYER2_SIZE, OUTPUT_SIZE]))
   b2 = tf.Variable(tf.zeros([OUTPUT_SIZE]))
   
   # output
-  y = tf.sigmoid(tf.matmul(y1, W2) + b2)
+  # y = tf.sigmoid(tf.matmul(y1, W2) + b2)
+  y = tf.matmul(y1, W2) + b2
   
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, OUTPUT_SIZE])
@@ -127,11 +128,11 @@ def main(_):
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
   hyperparameter_candidates = [
-    (0.5, 0.1),
-    (0.5, 1.0),
-    (0.5, 10.0),
+    (0.5, 0.0),
+    # (0.5, 0.1),
+    # (0.5, 1.0),
+    # (0.5, 10.0),
   ]
-  
   search_result = search(mnist, hyperparameter_candidates)
   
   print(search_result.accuracy, search_result.hyperparameters)
