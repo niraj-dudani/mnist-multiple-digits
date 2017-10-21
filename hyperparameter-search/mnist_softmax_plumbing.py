@@ -127,8 +127,9 @@ def main(_):
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
   hyperparameter_candidates = [
+    (0.5, 0.1),
     (0.5, 1.0),
-    (25, 1.0),
+    (0.5, 10.0),
   ]
   
   search_result = search(mnist, hyperparameter_candidates)
