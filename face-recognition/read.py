@@ -57,19 +57,24 @@ for image, coords in zip(images, coords):
 		left_eye_r:left_eye_r+width_eye_r
 	]
 	
-	plt.imshow(image)
+	if -1 not in face_coords:
+		faces.append(cropped_face)
 	
-	plt.figure()
-	plt.imshow(cropped_face)
+	if -1 not in eye_l_coords:
+		eyes_l.append(cropped_eye_l)
 	
-	plt.figure()
-	plt.imshow(cropped_eye_l)
+	if -1 not in eye_r_coords:
+		eyes_r.append(cropped_eye_r)
 	
-	plt.figure()
-	plt.imshow(cropped_eye_r)
+	#~ plt.imshow(image)
 	
-	faces.append(cropped_face)
-	eyes_l.append(cropped_eye_l)
-	eyes_r.append(cropped_eye_r)
+	#~ plt.figure()
+	#~ plt.imshow(cropped_face)
 	
-	plt.show()
+	#~ plt.figure()
+	#~ plt.imshow(cropped_eye_l)
+	
+	#~ plt.figure()
+	#~ plt.imshow(cropped_eye_r)
+	
+	#~ plt.show()
