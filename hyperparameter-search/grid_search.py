@@ -49,7 +49,7 @@ def check_default_bounds(range_min, range_max):
     )
 
 
-def grid_search(range_min, range_max, n_points = 20):
+def grid_search(range_min, range_max, n_points = 20, n_samples = 1):
     import numpy as np
     
     a1, b1, c1, d1, e1 = range_min
@@ -59,6 +59,7 @@ def grid_search(range_min, range_max, n_points = 20):
         print("Invalid bounds for the given grid")
         return
     
+    print("[Sampling on grid]")
     learning_rate_arr = np.logspace(a1, a2, num=n_points)
     regularisation_constant_arr = np.logspace(b1, b2, num=n_points)
     iterations_arr = np.logspace(c1, c2, num=n_points)
@@ -75,10 +76,14 @@ def grid_search(range_min, range_max, n_points = 20):
         )
     )
     
-    random_tuple = choice(grid)
-    random_tuple = [np.float32(z) for z in random_tuple]
+    samples = []
+    for i in range(n_samples):
+        random_tuple = choice(grid)
+        random_tuple = [np.float32(z) for z in random_tuple]
+        samples.append(random_tuple)
     
-    return random_tuple
+    print("[Sampling done]")
+    return samples
 
 
 # Method to get the first initialised random

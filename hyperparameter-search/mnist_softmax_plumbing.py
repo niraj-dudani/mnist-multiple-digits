@@ -40,7 +40,7 @@ def train_and_test(data, learning_rate, regularization_constant, iterations, bat
   x = tf.placeholder(tf.float32, [None, LAYER1_SIZE])
   
   # layer 1
-  W1 = tf.Variable(tf.zeros([LAYER1_SIZE, LAYER2_SIZE]))
+  W1 = tf.Variable(tf.random_normal([LAYER1_SIZE, LAYER2_SIZE]))
   b1 = tf.Variable(tf.zeros([LAYER2_SIZE]))
   y1 = tf.sigmoid(tf.matmul(x, W1) + b1)
   
@@ -80,7 +80,7 @@ def train_and_test(data, learning_rate, regularization_constant, iterations, bat
   # Test trained model
   correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-  
+
   accuracy_value = sess.run(
     accuracy,
     feed_dict = {
@@ -108,6 +108,8 @@ def search(data, hyperparameter_candidates):
   for hyperparameters in hyperparameter_candidates:
     learning_rate, regularization_constant, iterations, batch_size, hidden_neurons = hyperparameters
     
+    print()
+    print()
     print("Learning rate =", learning_rate)
     print("Regularization constant =", regularization_constant)
     print("Iterations =", iterations)
@@ -146,17 +148,17 @@ def main(_):
   
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
   
-  grid_size = 20
-  n_samples = 5
+  grid_size = 40
+  n_samples = 20
   zoom_factor = 5
-  n_search_levels = 3
+  n_search_levels = 2
   
   # Parameter range
   ln_min = -3
-  ln_max = 1
+  ln_max = 0
   
-  rg_min = -3
-  rg_max = 1
+  rg_min = -7
+  rg_max = -3
   
   it_min = 3
   it_max = 5
@@ -169,21 +171,19 @@ def main(_):
   
   for i_search_level in range(n_search_levels):
     print()
-    print('[Search Level {}]'.format(i_search_level))
+    print('[[ Search Level {} ]]'.format(i_search_level))
     print('Learning rate range: [{}, {}]'.format(ln_min, ln_max))
     print('Regularization constant range: [{}, {}]'.format(rg_min, rg_max))
     print('Iteration range: [{}, {}]'.format(it_min, it_max))
     print('Batch size range: [{}, {}]'.format(bt_min, bt_max))
     print('Hidden neurons range: [{}, {}]'.format(hd_min, hd_max))
     
-    hyperparameter_candidates = [
-      grid_search.grid_search(
-        (ln_min, rg_min, it_min, bt_min, hd_min),
-        (ln_max, rg_max, it_max, bt_max, hd_max),
-        grid_size
-      )
-      for _ in range(n_samples)
-    ]
+    hyperparameter_candidates = grid_search.grid_search(
+      (ln_min, rg_min, it_min, bt_min, hd_min),
+      (ln_max, rg_max, it_max, bt_max, hd_max),
+      grid_size,
+      n_samples
+    )
     
     
     print(hyperparameter_candidates)
