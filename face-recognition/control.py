@@ -1,4 +1,6 @@
+import tensorflow as tf
 import utils
+
 
 #=======================
 # Globals
@@ -45,11 +47,21 @@ model = utils.build(
 	bias_init
 )
 
-weights, accuracy = utils.train_and_predict(
-	model,
-	data,
-	n_iterations,
-	logging_frequency
-)
+with tf.Session() as session:
+	session.run(tf.global_variables_initializer())
+	
+	weights = utils.train(
+		session,
+		model,
+		data,
+		n_iterations,
+		logging_frequency
+	)
+	
+	accuracy = utils.predict(
+		session,
+		model,
+		data
+	)
 
 print("Accuracy: {}%".format(accuracy * 100))
