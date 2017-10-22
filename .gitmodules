@@ -1,0 +1,3 @@
+[submodule "face-recognition/msgpack-numpy"]
+	path = face-recognition/msgpack-numpy
+	url = https://github.com/lebedov/msgpack-numpy
