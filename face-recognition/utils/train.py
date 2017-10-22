@@ -29,12 +29,4 @@ def train(
 	
 	weights_trained = session.run(model.weights)
 	
-	#~ is_correct = (y_ == data.test_labels)
-	#~ n_correct = sum(is_correct)[0]
-	
-	#~ n_test = y_.shape[0]
-	
-	#~ accuracy = n_correct / n_test
-	
-	#~ return weights_trained, accuracy
-	return weights_trained
+	return weights_trained, loss_history

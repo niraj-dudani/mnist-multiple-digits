@@ -50,7 +50,7 @@ model = utils.build(
 with tf.Session() as session:
 	session.run(tf.global_variables_initializer())
 	
-	weights = utils.train(
+	weights, loss_history = utils.train(
 		session,
 		model,
 		data,
